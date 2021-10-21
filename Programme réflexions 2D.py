@@ -7,7 +7,8 @@ from random import random
             
 # Cette fonction renvoie les réflexions possibles(!) de S sur la grille sous la forme de couples (point,(orientation,position_du_plan_de_réflexion))
 def reflexions_possibles(S,grille):
-    x,y=grille[1],grille[2]                                                     # On suppose que la grille est de la forme (-x,x,y-y), donc rectangulaire.
+    # On suppose que la grille est de la forme (-x,x,y-y), donc rectangulaire.
+    x,y=grille[1],grille[2]                                                     
     xs,ys=S
     res=[((2*x-xs,ys),('vertical',x)),((-2*x-xs,ys),('vertical',-x)),((xs,2*y-ys),('horizontal',y)),((xs,-2*y-ys),('horizontal',-y))]
     # On fait les tests
@@ -15,8 +16,8 @@ def reflexions_possibles(S,grille):
     if xs<=-x: res.remove(((-2*x-xs,ys),('vertical',-x)))
     if ys<=-y:res.remove(((xs,-2*y-ys),('horizontal',-y)))
     if ys>=y:res.remove(((xs,2*y-ys),('horizontal',y)))
-
-    return(res)                                                                 # On peut remarquer que res ne sera jamais vide, elle contient toujours au moins 2 éléments
+    # On peut remarquer que res ne sera jamais vide, elle contient toujours au moins 2 éléments
+    return(res)                                                               
 
 
 
@@ -33,30 +34,36 @@ def multipath(S,A,grille,n,derniere_reflexion=None):
             tracer(S,A,True,'red')
             return([[S,distance(S,A)]])
         else: return [[False,False]]        
-    else:
-        L=reflexions_possibles(S,grille)                                        # L contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
+    else:                                       
+        # L contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
+        L=reflexions_possibles(S,grille) 
         for P in L:                                        
             points=multipath(P[0],A,grille,n-1,derniere_reflexion=P[1]) 
             for I in points:
-                if I[0]!=False:                                                 # I[0] vaut False si c'est un point fictif, qui ne se trouve pas sur la grille ou qui ne peut pas être tracé
-
-                    I2=intersection(P[0],I[0],P[1],grille)                      # On détermine l'intersection du nouveau point avec le point intermédiaire P
+                if I[0]!=False:                                                 
+                    # I[0] vaut False si c'est un point fictif, qui ne se trouve pas sur la grille ou qui ne peut pas être tracé
+                    I2=intersection(P[0],I[0],P[1],grille)                      
+                    # On détermine l'intersection du nouveau point avec le point intermédiaire P
                     if I2!=False:
-                        if dedans(S,grille):                                    # Si S est bien le premier point source, il se distingue en étant à l'intérieur, alors on trace le segment [SI2]
+                        # Si S est bien le premier point source, il se distingue en étant à l'intérieur, alors on trace le segment [SI2]
+                        if dedans(S,grille):                                    
                             tracer(S,I2,True)
                             # et on rajoute la distance entre S et I2 en plus de celle entre I et I2
                             res.append([I2,distance(I[0],I2)+I[1]+distance(S,I2)])
-                        else :                                                  # Le point S n'est pas le véritable point source mais une source fictive, on ajoute seulement la distance I,I2
+                        # Le point S n'est pas le véritable point source mais une source fictive, on ajoute seulement la distance I,I2
+                        else :                                                  
                             res.append([I2,distance(I[0],I2)+I[1]]) 
                         if I2!=I[0]:
-                            tracer(I2,I[0],True)                                # On trace le rayon entre le nouveau point et le point intermédiaire 
+                            # On trace le rayon entre le nouveau point et le point intermédiaire 
+                            tracer(I2,I[0],True)                                
         return res
             
                 
 
 def dedans(A,grille):
     xa,ya=A
-    if abs(xa)<=abs(grille[0]) and abs(ya)<=abs(grille[2]):                     # Ici on suppose que la grille est de la forme (-abscisse,abscisse,ordonnée,-ordonnée) elle est rectangulaire
+    # Ici on suppose que la grille est de la forme (-abscisse,abscisse,ordonnée,-ordonnée) elle est rectangulaire
+    if abs(xa)<=abs(grille[0]) and abs(ya)<=abs(grille[2]):                     
         return True
     return False
 
@@ -71,17 +78,20 @@ def intersection(S,A,plan_reflexion,grille):
         # On détermine l'équation de la droite (SA) : y=mx+b
         m=(ys-ya)/(xs-xa)
         b=ya-m*xa
-        if orientation == 'horizontal':                                         # Si le miroir est horizontal, sa position est une ordonnée
+        # Si le miroir est horizontal, sa position est une ordonnée
+        if orientation == 'horizontal':                                         
             yintersection=pos_ref
             xintersection=(yintersection-b)/m
-        else:                                                                   # Si le miroir est vertical, sa position est une abscisse
+        # Si le miroir est vertical, sa position est une abscisse
+        else:                                                                   
             xintersection=pos_ref
             yintersection=xintersection*m+b 
-        if not(dedans((xintersection,yintersection),grille)): return False      # Si le point d'intersection déterminé n'est pas sur la grille, il n'existe pas, on renvoie False
+        # Si le point d'intersection déterminé n'est pas sur la grille, il n'existe pas, on renvoie False
+        if not(dedans((xintersection,yintersection),grille)): return False      
         placer((xintersection,yintersection),'black')
         return (xintersection,yintersection)
-    
-    return(xs,pos_ref) # Dans ce cas pos_ref est l'ordonnée du plan de réflexion, lieu où se situe l'intersection
+    # Dans ce cas pos_ref est l'ordonnée du plan de réflexion, lieu où se situe l'intersection
+    return(xs,pos_ref) 
         
 
 def tracer_grille(grille):
