@@ -15,7 +15,11 @@ def reflexions_possibles(S,grille):
     res=[((2*x-xs,ys),('vertical',x)),((-2*x-xs,ys),('vertical',-x)),((xs,2*y-ys),('horizontal',y)),((xs,-2*y-ys),('horizontal',-y))]
     # We filter edges that are inside the grid, why ? 
     #TODO : Why ?
-    return (list(filter(lambda virtualImage : not dedans(virtualImage[0], grille), res)))
+    if xs>=x: res.remove(((2*x-xs,ys),('vertical',x)))
+    if xs<=-x: res.remove(((-2*x-xs,ys),('vertical',-x)))
+    if ys<=-y:res.remove(((xs,-2*y-ys),('horizontal',-y)))
+    if ys>=y:res.remove(((xs,2*y-ys),('horizontal',y)))
+    return res
     # On peut remarquer que res ne sera jamais vide, elle contient toujours au moins 2 éléments
 
 
@@ -24,39 +28,56 @@ def distance(A,B):
     ((xa,ya),(xb,yb))=A,B
     return(sqrt((xa-xb)**2 + (ya-yb)**2))
 
-
+def multipath(S,A,grille,n,derniere_reflexion=None):
+    res=[]
+    if n==0:
+        S2=intersection(S,A,grille)
+        if S2:
+            tracer(S2,A,'red')
+            return [S2]
+        return []
+    else:                                       
+        # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
+        virtualImages=reflexions_possibles(S,grille) 
+        res = []
+        for image in virtualImages:      
+            points_arrive=multipath(image[0],A,grille,n-1,derniere_reflexion=image[1])
+            for I in points_arrive:
+                S2=intersection(S,I,grille)  
+                # On détermine l'intersection du nouveau point avec le point intermédiaire image
+                if S2:
+                    # Si S est bien le premier point source, il se distingue en étant à l'intérieur, alors on trace le segment [SI2]
+                    tracer(S2,I)
+                    res+=[S2]
+        return res
+"""
 def multipath(S,A,grille,n,derniere_reflexion=None):
     res=[]
     if n==0:
         S=intersection(S,A,derniere_reflexion,grille)
         if S:
             tracer(S,A,'red')
-            return([[S,distance(S,A)]])
-        else: return [[False,False]]        
+        return S
     else:                                       
         # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
         virtualImages=reflexions_possibles(S,grille) 
         for image in virtualImages:                                        
             points=multipath(image[0],A,grille,n-1,derniere_reflexion=image[1]) 
+            res = []
             for I in points:
-                if I[0]!=False:                                                 
+                if I[0]:                                                 
                     # I[0] vaut False si c'est un point fictif, qui ne se trouve pas sur la grille ou qui ne peut pas être tracé
                     I2=intersection(image[0],I[0],image[1],grille)                      
                     # On détermine l'intersection du nouveau point avec le point intermédiaire image
-                    if I2!=False:
+                    if I2:
                         # Si S est bien le premier point source, il se distingue en étant à l'intérieur, alors on trace le segment [SI2]
                         if dedans(S,grille):                                    
                             tracer(S,I2)
-                            # et on rajoute la distance entre S et I2 en plus de celle entre I et I2
-                            res.append([I2,distance(I[0],I2)+I[1]+distance(S,I2)])
                         # Le point S n'est pas le véritable point source mais une source fictive, on ajoute seulement la distance I,I2
-                        else :                                                  
-                            res.append([I2,distance(I[0],I2)+I[1]]) 
                         if I2!=I[0]:
                             # On trace le rayon entre le nouveau point et le point intermédiaire 
-                            tracer(I2,I[0])                                
-        return res
-            
+                            tracer(I2,I[0])   
+"""                                                       
                 
 """
     Check if a point A is in a grid. Grid is described as [-x,x,y,-y]
@@ -68,9 +89,41 @@ def dedans(A,grille):
         return True
     return False
 
+def segmentInTheGrid(S,A,plan_reflexion,grille):
+    # D'abord on vérifie si le point est dans la grille auquel cas on renvoie S lui-meme
+    # on cherche l'intersection du segment [SA] avec le miroir "derniere_reflexion"
+    if S == A : 
+        raise ValueError("Departure and arrival are the same point !")
+    orientation,pos_ref=plan_reflexion
+    hauteur, cote = grille[2], grille[1]
+    xa,ya=A
+    xs,ys=S
+    # We define a line by two different points of this line
+    currentLine = []
+    linesOfGrid = [1,0, hauteur], [1,0,-hauteur], [0,1,-cote], [0,1,cote]
+    droiteCoteHaut,droiteCoteBas,droiteCoteDroit,droiteCoteGauche = linesOfGrid
+    intersectionsWithGrid = list(map(lambda line : intersection(line1, line)))
+    # On détermine l'équation de la droite (SA) : y=mx+b
+    m=(ys-ya)/(xs-xa)
+    b=ya-m*xa
+
+def isBetween(departure,arrival,point):
+    if departure == arrival : 
+        raise ValueError("Departure and arrival are the same point !")
+    else :
+        xa,ya = departure
+        xb,yb = arrival
+        xc,yc = point
+        if xa != xb:
+            lbda = (xc-xb)/(xa-xb)
+            return 0 <= lbda <= 1 and yc == lbda*ya + (1-lbda)*yb
+        else : 
+            lbda = (yc-yb)/(ya-yb)
+            return 0 <= lbda <= 1 and xc == lbda*xa + (1-lbda)*xb
+
 """
     Returns the intersection of a segment between 2 edges with a miror. It's useful when one of the edges is behind the mirror. 
-"""
+
 def intersection(S,A,plan_reflexion,grille):
     # D'abord on vérifie si le point est dans la grille auquel cas on renvoie S lui-meme
     # on cherche l'intersection du segment [SA] avec le miroir "derniere_reflexion"
@@ -93,8 +146,46 @@ def intersection(S,A,plan_reflexion,grille):
         drawPoint((xintersection,yintersection),'black')
         return (xintersection,yintersection) 
     return False     
+"""
 
-        
+"""
+def intersection(S,A,grille):
+    xa,ya=A
+    xs,ys=S
+    cote = grille[1]
+    hauteur = grille[2]
+    # On détermine l'équation de la droite (SA) : y=mx+b
+    m=(ys-ya)/(xs-xa)
+    b=ya-m*xa
+    resultPoint =[]
+    # Si le miroir est horizontal, sa position est une ordonnée
+    if -hauteur<=ys<=hauteur:
+        if xs<xa:
+            resultPoint = [-cote,-m*cote+b]
+        else:
+            resultPoint = [cote,m*cote+b]
+    elif ys>hauteur:
+        resultPoint = [(hauteur-b)/m, hauteur]
+    else :
+        resultPoint = [(-hauteur-b)/m, -hauteur]
+    drawPoint(resultPoint,'black')
+    print(dedans(resultPoint,grille))
+    return resultPoint
+
+    if orientation == 'horizontal':                                         
+        yintersection=pos_ref
+        xintersection=(yintersection-b)/m
+    # Si le miroir est vertical, sa position est une abscisse
+    else:                                                                   
+        xintersection=pos_ref
+        yintersection=xintersection*m+b 
+    # Si le point d'intersection déterminé n'est pas sur la grille, il n'existe pas, on renvoie False
+    if dedans((xintersection,yintersection),grille):
+        drawPoint((xintersection,yintersection),'black')
+        return (xintersection,yintersection) 
+    return False     
+"""
+
 """ 
     Procedure initializing the window and drawing the initial grid.
 """
@@ -123,7 +214,7 @@ def tracer(P,I,color_fleche='black'):
     tu.up()
     tu.goto(P)
     tu.down()
-    tu.setheading(tu.towards(I))
+    tu.setheading(tu.towards(*I))
     tu.goto(milieu)
     tu.color(color_fleche)
     tu.stamp()
@@ -162,12 +253,11 @@ def creneaux(t,periode=0.5,amplitude=1,dephasage=0):
 # Caractéristiques de la simulation :
 cote=300
 grille=(-cote,cote,cote,-cote)
-S,A=(((2*random()-1)*cote,(2*random()-1)*cote),((2*random()-1)*cote,(2*random()-1)*cote))
+S,A=[(2*random()-1)*cote,(2*random()-1)*cote]  ,  [(2*random()-1)*cote,(2*random()-1)*cote]
 
 
 
-print(main(S,A,grille,2))
-print(S,A)
+#print(main(S,A,grille,1))
 
 tu.hideturtle()
 tu.exitonclick()
