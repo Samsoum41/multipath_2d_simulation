@@ -87,7 +87,7 @@ def multipath(S,A,grille,n,derniere_reflexion=None):
 def dedans(A,grille):
     xa,ya=A
     # Ici on suppose que la grille est de la forme (-abscisse,abscisse,ordonnée,-ordonnée) elle est rectangulaire
-    if abs(xa)<=abs(grille[0]) and abs(ya)<=abs(grille[2]):                     
+    if abs(round(xa))<=abs(grille[0]) and abs(round(ya))<=abs(grille[2]):                     
         return True
     return False
 
@@ -138,7 +138,7 @@ def segmentInTheGrid(S,A,grille):
     linesOfGrid = [[0,cote], [cote,cote]], [[0, -cote], [-cote, -cote]], [[cote, 0], [cote,cote]], [[-cote, 0], [-cote, cote]]
     droiteCoteHaut,droiteCoteBas,droiteCoteDroit,droiteCoteGauche = linesOfGrid 
     # The list above may contain None Value
-    intersectionsWithGrid = list(map(lambda line : intersection([S,A], line), linesOfGrid))
+    intersectionsWithGrid = list(map(lambda line : intersection(line, [S,A]), linesOfGrid))
     # We filter NoneValues and intersections out of the grid
     intersectionsInTheGrid = list(filter(lambda point : point!=None and dedans(point, grille) and isBetween(S, A, point), intersectionsWithGrid))
     if dedans(S,grille) and dedans(A, grille):
@@ -291,7 +291,9 @@ S,A=[(2*random()-1)*cote,(2*random()-1)*cote]  ,  [(2*random()-1)*cote,(2*random
 
 
 
-print(main(S,A,grille,1))
+#print(main(S,A,grille,1))
+segmentInTheGrid([-2*cote,0],[0,0], grille), [[-cote,0],[0,0]]
+
 
 tu.hideturtle()
 tu.exitonclick()
