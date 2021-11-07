@@ -1,6 +1,4 @@
 import turtle as tu
-import numpy as np
-import matplotlib.pyplot as plt
 from math import sqrt
 from random import random
 
