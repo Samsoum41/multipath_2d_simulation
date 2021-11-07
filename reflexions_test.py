@@ -1,5 +1,5 @@
 import unittest
-from reflexions import segmentInTheGrid, isBetween
+from reflexions import segmentInTheGrid, isBetween, intersection
 
 class TestIsBetween(unittest.TestCase):
     def setUp(self):
@@ -12,6 +12,15 @@ class TestIsBetween(unittest.TestCase):
         self.assertFalse(isBetween([-self.cote,2*self.cote], [2*self.cote, -self.cote], [1,self.cote]))
         self.assertFalse(isBetween([-2*self.cote,0],[0,1], [-self.cote,0]))
         self.assertFalse(isBetween( [2*self.cote,self.cote/2],[1,0], [self.cote,self.cote/4]))
+
+class TestIntersection(unittest.TestCase):
+    def test(self):
+        COTE = 20
+        self.assertEqual(intersection([[-COTE,COTE], [0,0]],[[COTE, COTE], [COTE, 0]]), [COTE, -COTE])
+        self.assertEqual(intersection([[-COTE,COTE], [0,0]],[[COTE, COTE], [0, COTE]]), [-COTE, COTE])
+        self.assertEqual(intersection([[-COTE,COTE], [0, COTE]],[[-COTE, -COTE], [0, -COTE]]), None)
+        self.assertEqual(intersection([[-COTE,COTE], [0,-COTE]],[[0, COTE], [0, 0]]), [0, -COTE])
+
 
 class TestSegmentInTheGrid(unittest.TestCase):
     def setUp(self):

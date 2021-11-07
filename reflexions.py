@@ -31,10 +31,11 @@ def distance(A,B):
 def multipath(S,A,grille,n,derniere_reflexion=None):
     res=[]
     if n==0:
-        S2=intersection(S,A,grille)
-        if S2:
-            tracer(S2,A,'red')
-            return [S2]
+        segmentInterieur=segmentInTheGrid(S,A,grille)
+        if segmentInterieur:
+            # A must be the second element of segmentInterieur
+            tracer(segmentInterieur[0], A,'red')
+            return [segmentInterieur[0]]
         return []
     else:                                       
         # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
@@ -43,12 +44,13 @@ def multipath(S,A,grille,n,derniere_reflexion=None):
         for image in virtualImages:      
             points_arrive=multipath(image[0],A,grille,n-1,derniere_reflexion=image[1])
             for I in points_arrive:
-                S2=intersection(S,I,grille)  
+                segmentInterieur=segmentInTheGrid(S,I,grille)  
                 # On détermine l'intersection du nouveau point avec le point intermédiaire image
-                if S2:
+                if segmentInterieur:
                     # Si S est bien le premier point source, il se distingue en étant à l'intérieur, alors on trace le segment [SI2]
-                    tracer(S2,I)
-                    res+=[S2]
+                    departure, arrival = segmentInterieur
+                    tracer(departure,arrival)
+                    res+=[departure]
         return res
 """
 def multipath(S,A,grille,n,derniere_reflexion=None):
@@ -89,23 +91,25 @@ def dedans(A,grille):
         return True
     return False
 
-def segmentInTheGrid(S,A,plan_reflexion,grille):
-    # D'abord on vérifie si le point est dans la grille auquel cas on renvoie S lui-meme
-    # on cherche l'intersection du segment [SA] avec le miroir "derniere_reflexion"
-    if S == A : 
-        raise ValueError("Departure and arrival are the same point !")
-    orientation,pos_ref=plan_reflexion
-    hauteur, cote = grille[2], grille[1]
-    xa,ya=A
-    xs,ys=S
-    # We define a line by two different points of this line
-    currentLine = []
-    linesOfGrid = [1,0, hauteur], [1,0,-hauteur], [0,1,-cote], [0,1,cote]
-    droiteCoteHaut,droiteCoteBas,droiteCoteDroit,droiteCoteGauche = linesOfGrid
-    intersectionsWithGrid = list(map(lambda line : intersection(line1, line)))
-    # On détermine l'équation de la droite (SA) : y=mx+b
-    m=(ys-ya)/(xs-xa)
-    b=ya-m*xa
+def intersection(line1, line2):
+    xa,ya = line1[0]
+    xb,yb = line1[1]
+    xc,yc = line2[0]
+    xd,yd = line2[1]
+    # Check if each line is well defined 
+    if xa == xb and ya == yb:
+        raise ValueError('Line 1 is not defined by two different point, points are the same !')
+    elif xc == xd and yc == yd:
+        raise ValueError('Line 2 is not defined by two different point, points are the same !')
+    # Check if the two lines are parallel using cross product
+    elif (xb-xa)*(yd-yc) - (xd-xc)*(yb-ya) == 0:
+        return None 
+    else :
+        # This is the result of solving the system of equations of the intersection of two lines. This value exist because the cross product is not null here.
+        k = ((xb-xd)*(ya-yd) - (yb-yd)*(xa-xb))/((xc-xd)*(ya-yb) - (xa-xb)*(yc-yd))
+        return [k*xc + (1-k)*xd, k*yc + (1-k)*yd]
+
+
 
 def isBetween(departure,arrival,point):
     if departure == arrival : 
@@ -120,6 +124,35 @@ def isBetween(departure,arrival,point):
         else : 
             lbda = (yc-yb)/(ya-yb)
             return 0 <= lbda <= 1 and xc == lbda*xa + (1-lbda)*xb
+
+def segmentInTheGrid(S,A,grille):
+    # D'abord on vérifie si le point est dans la grille auquel cas on renvoie S lui-meme
+    # on cherche l'intersection du segment [SA] avec le miroir "derniere_reflexion"
+    if S == A : 
+        raise ValueError("Departure and arrival are the same point !")
+    hauteur, cote = grille[2], grille[1]
+    xa,ya=A
+    xs,ys=S
+    # We define a line by two different points of this line
+    currentLine = []
+    linesOfGrid = [[0,cote], [cote,cote]], [[0, -cote], [-cote, -cote]], [[cote, 0], [cote,cote]], [[-cote, 0], [-cote, cote]]
+    droiteCoteHaut,droiteCoteBas,droiteCoteDroit,droiteCoteGauche = linesOfGrid 
+    # The list above may contain None Value
+    intersectionsWithGrid = list(map(lambda line : intersection([S,A], line), linesOfGrid))
+    # We filter NoneValues and intersections out of the grid
+    intersectionsInTheGrid = list(filter(lambda point : point!=None and dedans(point, grille) and isBetween(S, A, point), intersectionsWithGrid))
+    if dedans(S,grille) and dedans(A, grille):
+        return [S,A]
+    elif dedans(S,grille): # Then len(intersectionsInTheGrid)>0 :
+        return [S, intersectionsInTheGrid[0]]
+    elif dedans(A, grille) and len(intersectionsInTheGrid)>0 : 
+        return [intersectionsInTheGrid[0], A]
+    elif intersectionsInTheGrid: # Then len(intersectionsInTheGrid) == 2
+        return intersectionsInTheGrid
+    else:
+        return None
+
+
 
 """
     Returns the intersection of a segment between 2 edges with a miror. It's useful when one of the edges is behind the mirror. 
@@ -146,6 +179,7 @@ def intersection(S,A,plan_reflexion,grille):
         drawPoint((xintersection,yintersection),'black')
         return (xintersection,yintersection) 
     return False     
+
 """
 
 """
@@ -257,7 +291,7 @@ S,A=[(2*random()-1)*cote,(2*random()-1)*cote]  ,  [(2*random()-1)*cote,(2*random
 
 
 
-#print(main(S,A,grille,1))
+print(main(S,A,grille,1))
 
 tu.hideturtle()
 tu.exitonclick()
