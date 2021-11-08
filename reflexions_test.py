@@ -22,7 +22,7 @@ class TestIntersection(unittest.TestCase):
         self.assertEqual(intersection([[-COTE,COTE], [0,-COTE]],[[0, COTE], [0, 0]]), [0, -COTE])
         self.assertEqual(intersection([[-COTE,COTE], [0,-COTE]],[[0, COTE], [0, 0]]), [0, -COTE])
         self.assertEqual(intersection([[0, COTE], [0, 0]],[[-COTE,COTE], [0,-COTE]]), [0, -COTE])
-        self.assertEqual(intersection([[300, 0], [300, 300]], [[-600,0], [0,0]]), [300,0])
+        self.assertEqual(intersection([[COTE, 0], [COTE, COTE]], [[-2*COTE,0], [0,0]]), [COTE,0])
 
 
 class TestSegmentInTheGrid(unittest.TestCase):
