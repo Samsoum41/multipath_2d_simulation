@@ -1,6 +1,7 @@
 import turtle as tu
 from math import sqrt
 from random import random
+from sympy import Point, Line
 
             
 """
@@ -285,12 +286,12 @@ def creneaux(t,periode=0.5,amplitude=1,dephasage=0):
 # Caractéristiques de la simulation :
 cote=300
 grille=(-cote,cote,cote,-cote)
-S,A=[(2*random()-1)*cote,(2*random()-1)*cote]  ,  [(2*random()-1)*cote,(2*random()-1)*cote]
+#S,A=Point((2*random()-1)*cote,(2*random()-1)*cote)  ,  PoinS,A=Point((2*random()-1)*cote,(2*random()-1)*cote)
 
-
+S,A = Point(-2*cote,0), Point(0,0)
 
 #print(main(S,A,grille,1))
-segmentInTheGrid([-2*cote,0],[0,0], grille), [[-cote,0],[0,0]]
+segmentInTheGrid(S,A, grille)
 
 
 tu.hideturtle()
