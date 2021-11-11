@@ -6,6 +6,7 @@ class TestDedans(unittest.TestCase):
     def setUp(self):
         self.cote=300
         self.grille=Polygon(Point(-self.cote, -self.cote), Point(-self.cote, self.cote), Point(self.cote, self.cote), Point(self.cote, -self.cote))
+    # Tests with Points inside the grid
     def test_In(self):
         self.assertTrue(dedans(Point(0,0), self.grille))
         self.assertTrue(dedans(Point(self.cote/2,0), self.grille))
@@ -14,20 +15,20 @@ class TestDedans(unittest.TestCase):
         self.assertTrue(dedans(Point(self.cote,0), self.grille))
         self.assertTrue(dedans(Point(0,self.cote), self.grille))
         self.assertTrue(dedans(Point(self.cote,self.cote), self.grille))      
+    
+    # Tests with Points outside the grid
     def test_Out(self):
         self.assertFalse(dedans(Point(2*self.cote,self.cote), self.grille))      
         self.assertFalse(dedans(Point(self.cote,2*self.cote), self.grille))
         self.assertFalse(dedans(Point(0,2*self.cote), self.grille))
         self.assertFalse(dedans(Point(2*self.cote,0), self.grille))
-        self.assertFalse(dedans(Point(self.cote,self.cote+1), self.grille))
-
-        
-        
+        self.assertFalse(dedans(Point(self.cote,self.cote+1), self.grille))      
 
 class TestSegmentInTheGrid(unittest.TestCase):
     def setUp(self):
         self.cote=300
         self.grille=Polygon(Point(-self.cote, -self.cote), Point(-self.cote, self.cote), Point(self.cote, self.cote), Point(self.cote, -self.cote))
+    
     # This test contains the arrival point out the grid and the starting point in. 
     def test_oneInOneOut(self):
         # Here S is at the position (0,0)
@@ -55,10 +56,12 @@ class TestSegmentInTheGrid(unittest.TestCase):
         self.assertEqual(segmentInTheGrid(Segment(Point(0,0),Point(0,2*self.cote)), self.grille), Segment(Point(0,0),Point(0,self.cote)))
         # S is at the bottom
         self.assertEqual(segmentInTheGrid(Segment(Point(0,0),Point(0,-2*self.cote)), self.grille), Segment(Point(0,0),Point(0,-self.cote)))
+
     # This test contains the arrival point and the starting point in the grid
     def test_bothIn(self):
         self.assertEqual(segmentInTheGrid(Segment(Point(-self.cote/2,0),Point(self.cote/2,0)), self.grille), Segment(Point(-self.cote/2,0),Point(self.cote/2,0)))
         self.assertEqual(segmentInTheGrid(Segment(Point(self.cote/2,self.cote/2),Point(-self.cote/2, -self.cote/2)), self.grille), Segment(Point(self.cote/2,self.cote/2),Point(-self.cote/2, -self.cote/2)))
+
     # This test contains the arrival point and the starting point out the grid
     def test_bothOut(self):
         self.assertEqual(segmentInTheGrid(Segment(Point(3*self.cote,0),Point(2*self.cote,0)), self.grille), None)

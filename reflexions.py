@@ -58,16 +58,16 @@ def tracer_grille(grille:Polygon):
     x1,x2,y1,y2=grille.points
     ADDITIONAL_SIZE = 300
     sizeOfScreen=abs(x1-x2) + ADDITIONAL_SIZE
-    tu.setup(sizeOfScreen,sizeOfScreen)
-    tu.up()
-    tu.speed(5)
-    tu.goto(x1,y1)
-    tu.down()
-    tu.goto(x1,y2)
-    tu.goto(x2,y2)
-    tu.goto(x2,y1)
-    tu.goto(x1,y1)
-    tu.speed(7)
+    turtle.setup(sizeOfScreen,sizeOfScreen)
+    turtle.up()
+    turtle.speed(5)
+    turtle.goto(x1,y1)
+    turtle.down()
+    turtle.goto(x1,y2)
+    turtle.goto(x2,y2)
+    turtle.goto(x2,y1)
+    turtle.goto(x1,y1)
+    turtle.speed(7)
 
 """
     Draws a link between two points
@@ -76,23 +76,23 @@ def tracer(P:Point,I:Point,color_fleche='black'):
     x1,y1=P
     x2,y2=I
     milieu=((x1+x2)/2,(y1+y2)/2)
-    tu.up()
-    tu.goto(P)
-    tu.down()
-    tu.setheading(tu.towards(*I))
-    tu.goto(milieu)
-    tu.color(color_fleche)
-    tu.stamp()
-    tu.color('black')
-    tu.goto(I)
+    turtle.up()
+    turtle.goto(P)
+    turtle.down()
+    turtle.setheading(turtle.towards(*I))
+    turtle.goto(milieu)
+    turtle.color(color_fleche)
+    turtle.stamp()
+    turtle.color('black')
+    turtle.goto(I)
 
 """
     Draw a point of a specific color on a position.
 """
 def drawPoint(S:Point,color:str):
-    tu.up()
-    tu.goto(S)
-    tu.dot(None,color)
+    turtle.up()
+    turtle.goto(S)
+    turtle.dot(None,color)
     
 def main(S:Point,A:Point,grille:Polygon,nombre_de_reflexions=3):
     # Dans l'ordre, on trace la grille, place les points de départ et d'arrivés S et A, puis on trace les différents rayons de S à A sur la grille en n (ici n=2) réflexions.
@@ -120,9 +120,9 @@ S,A = Point(-2*COTE,0), Point(0,0)
 #print(main(S,A,grille,1))
 segmentInTheGrid(Segment(S,A), grille)
 
-
-tu.hideturtle()
-tu.exitonclick()
+turtle = tu.Turtle()
+turtle.hideturtle()
+turtle.exitonclick()
 
 #Pour n=10, 
 
