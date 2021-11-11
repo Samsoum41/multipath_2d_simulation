@@ -1,6 +1,28 @@
 import unittest
-from reflexions import segmentInTheGrid
+from reflexions import segmentInTheGrid, dedans
 from sympy import Point, Segment, Polygon
+
+class TestDedans(unittest.TestCase):
+    def setUp(self):
+        self.cote=300
+        self.grille=Polygon(Point(-self.cote, -self.cote), Point(-self.cote, self.cote), Point(self.cote, self.cote), Point(self.cote, -self.cote))
+    def test_In(self):
+        self.assertTrue(dedans(Point(0,0), self.grille))
+        self.assertTrue(dedans(Point(self.cote/2,0), self.grille))
+        self.assertTrue(dedans(Point(0,self.cote/2), self.grille))
+        self.assertTrue(dedans(Point(self.cote/2,self.cote/2), self.grille))
+        self.assertTrue(dedans(Point(self.cote,0), self.grille))
+        self.assertTrue(dedans(Point(0,self.cote), self.grille))
+        self.assertTrue(dedans(Point(self.cote,self.cote), self.grille))      
+    def test_Out(self):
+        self.assertFalse(dedans(Point(2*self.cote,self.cote), self.grille))      
+        self.assertFalse(dedans(Point(self.cote,2*self.cote), self.grille))
+        self.assertFalse(dedans(Point(0,2*self.cote), self.grille))
+        self.assertFalse(dedans(Point(2*self.cote,0), self.grille))
+        self.assertFalse(dedans(Point(self.cote,self.cote+1), self.grille))
+
+        
+        
 
 class TestSegmentInTheGrid(unittest.TestCase):
     def setUp(self):
