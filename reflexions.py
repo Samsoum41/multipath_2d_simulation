@@ -15,16 +15,16 @@ def segmentInTheGrid(Seg:Segment, grille:Polygon):
     else :
         return None
 
-def multipath(S:Point,A:Point,grille:Polygon,n,derniere_reflexion=None):
+def multipath(S:Point,A:Point,grille:Polygon,n,turtle,derniere_reflexion=None):
     res=[]
     if n==0:
         segmentInterieur=segmentInTheGrid(S,A,grille)
         if segmentInterieur:
             # A must be the second element of segmentInterieur
-            tracer(segmentInterieur[0], A,'red')
+            tracer(segmentInterieur[0], A, turtle, 'red')
             return [segmentInterieur[0]]
         return []
-    else:                                       
+    else:                                  
         # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
         virtualImages=reflexions_possibles(S,grille) 
         res = []
@@ -36,7 +36,7 @@ def multipath(S:Point,A:Point,grille:Polygon,n,derniere_reflexion=None):
                 if segmentInterieur:
                     # Si S est bien le premier point source, il se distingue en étant à l'intérieur, alors on trace le segment [SI2]
                     departure, arrival = segmentInterieur
-                    tracer(departure,arrival)
+                    tracer(departure,arrival, turtle)
                     res+=[departure]
         return res                                                    
                 
@@ -54,7 +54,7 @@ def dedans(A:Point,grille:Polygon):
 """ 
     Procedure initializing the window and drawing the initial grid.
 """
-def tracer_grille(grille:Polygon):
+def tracer_grille(grille:Polygon,turtle):
     x1,x2,y1,y2=grille.points
     ADDITIONAL_SIZE = 300
     sizeOfScreen=abs(x1-x2) + ADDITIONAL_SIZE
@@ -72,7 +72,7 @@ def tracer_grille(grille:Polygon):
 """
     Draws a link between two points
 """
-def tracer(P:Point,I:Point,color_fleche='black'):
+def tracer(P:Point,I:Point,turtle,color_fleche='black'):
     x1,y1=P
     x2,y2=I
     milieu=((x1+x2)/2,(y1+y2)/2)
@@ -89,17 +89,22 @@ def tracer(P:Point,I:Point,color_fleche='black'):
 """
     Draw a point of a specific color on a position.
 """
-def drawPoint(S:Point,color:str):
+def drawPoint(S:Point,color:str,turtle):
     turtle.up()
     turtle.goto(S)
     turtle.dot(None,color)
     
-def main(S:Point,A:Point,grille:Polygon,nombre_de_reflexions=3):
-    # Dans l'ordre, on trace la grille, place les points de départ et d'arrivés S et A, puis on trace les différents rayons de S à A sur la grille en n (ici n=2) réflexions.
+def main(S:Point,A:Point,grille:Polygon, nombre_de_reflexions=3):
+    # Caractéristiques de la simulation :
+    COTE = 300
+    grille = Polygon(Point(-COTE, -COTE), Point(-COTE, COTE), Point(COTE, COTE), Point(COTE, -COTE))
+    turtle = tu.Turtle()
+    turtle.hideturtle()
+    turtle.exitonclick()
     tracer_grille(grille)
     drawPoint(S,'blue')
     drawPoint(A,'red')
-    L=multipath(S,A,grille,nombre_de_reflexions)
+    L=multipath(S,A,grille,nombre_de_reflexions, turtle)
     # On renvoie la liste des retards en secondes, en considérant que la distance est en pixel, donc 1 unité = 0.26 mm=2.6*10^-4 m
     lightSpeed=3*(10**8) # Célérité de la lumière en m/s
     n=len(L)
@@ -110,19 +115,16 @@ def creneaux(t,periode=0.5,amplitude=1,dephasage=0):
     else : return 0
 
     
-# Caractéristiques de la simulation :
-COTE=300
-grille=Polygon(Point(-COTE, -COTE), Point(-COTE, COTE), Point(COTE, COTE), Point(COTE, -COTE))
+
 #S,A=Point((2*random()-1)*cote,(2*random()-1)*cote)  ,  PoinS,A=Point((2*random()-1)*cote,(2*random()-1)*cote)
 
+"""
 S,A = Point(-2*COTE,0), Point(0,0)
-
 #print(main(S,A,grille,1))
 segmentInTheGrid(Segment(S,A), grille)
+"""
 
-turtle = tu.Turtle()
-turtle.hideturtle()
-turtle.exitonclick()
+
 
 #Pour n=10, 
 
