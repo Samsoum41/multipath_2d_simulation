@@ -1,30 +1,6 @@
 import unittest
 from reflexions import segmentInTheGrid, isBetween, intersection
 
-class TestIsBetween(unittest.TestCase):
-    def setUp(self):
-        self.cote=300
-        self.grille=(-self.cote,self.cote,self.cote,-self.cote)
-    def test(self):
-        self.assertTrue(isBetween([-2*self.cote,0],[0,0], [-self.cote,0]))
-        self.assertTrue(isBetween( [2*self.cote,self.cote/2],[0,0], [self.cote,self.cote/4]))
-        self.assertTrue(isBetween([-self.cote,2*self.cote], [2*self.cote, -self.cote], [0,self.cote]))
-        self.assertFalse(isBetween([-self.cote,2*self.cote], [2*self.cote, -self.cote], [1,self.cote]))
-        self.assertFalse(isBetween([-2*self.cote,0],[0,1], [-self.cote,0]))
-        self.assertFalse(isBetween( [2*self.cote,self.cote/2],[1,0], [self.cote,self.cote/4]))
-
-class TestIntersection(unittest.TestCase):
-    def test(self):
-        COTE = 300
-        self.assertEqual(intersection([[-COTE,COTE], [0,0]],[[COTE, COTE], [COTE, 0]]), [COTE, -COTE])
-        self.assertEqual(intersection([[-COTE,COTE], [0,0]],[[COTE, COTE], [0, COTE]]), [-COTE, COTE])
-        self.assertEqual(intersection([[-COTE,COTE], [0, COTE]],[[-COTE, -COTE], [0, -COTE]]), None)
-        self.assertEqual(intersection([[-COTE,COTE], [0,-COTE]],[[0, COTE], [0, 0]]), [0, -COTE])
-        self.assertEqual(intersection([[-COTE,COTE], [0,-COTE]],[[0, COTE], [0, 0]]), [0, -COTE])
-        self.assertEqual(intersection([[0, COTE], [0, 0]],[[-COTE,COTE], [0,-COTE]]), [0, -COTE])
-        self.assertEqual(intersection([[COTE, 0], [COTE, COTE]], [[-2*COTE,0], [0,0]]), [COTE,0])
-
-
 class TestSegmentInTheGrid(unittest.TestCase):
     def setUp(self):
         self.cote=300
