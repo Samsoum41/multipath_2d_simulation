@@ -5,11 +5,16 @@ from sympy import Point, Line, Segment, Polygon
 
 def segmentInTheGrid(Seg:Segment, grille:Polygon):
     I = grille.intersection(Seg)
-    #TODO Deal with border cases
     if I:
-        return [I, Seg.vertices[1]] if S == I else [Seg.vertices[0], I]
-    else : 
-        return [] 
+        if len(I)==1 :
+            return Segment(I[0], Seg.points[1]) if dedans(Seg.points[1], grille) else Segment(Seg.points[0], I[0])
+        else : 
+            return Segment(*I)
+    elif dedans(Seg.points[0], grille):
+        return Seg
+    else :
+        return None
+
 def multipath(S:Point,A:Point,grille:Polygon,n,derniere_reflexion=None):
     res=[]
     if n==0:
@@ -40,8 +45,9 @@ def multipath(S:Point,A:Point,grille:Polygon,n,derniere_reflexion=None):
 """
 def dedans(A:Point,grille:Polygon):
     xa,ya=A
+    grille = grille.bounds
     # Ici on suppose que la grille est de la forme (-abscisse,abscisse,ordonnée,-ordonnée) elle est rectangulaire
-    if abs(round(xa))<=abs(grille[0]) and abs(round(ya))<=abs(grille[2]):                     
+    if abs(round(xa))<=abs(grille[0]) and abs(round(ya))<=abs(grille[1]):                     
         return True
     return False
 
@@ -49,7 +55,7 @@ def dedans(A:Point,grille:Polygon):
     Procedure initializing the window and drawing the initial grid.
 """
 def tracer_grille(grille:Polygon):
-    x1,x2,y1,y2=grille.vertices
+    x1,x2,y1,y2=grille.points
     ADDITIONAL_SIZE = 300
     sizeOfScreen=abs(x1-x2) + ADDITIONAL_SIZE
     tu.setup(sizeOfScreen,sizeOfScreen)
@@ -112,7 +118,7 @@ grille=Polygon(Point(-COTE, -COTE), Point(-COTE, COTE), Point(COTE, COTE), Point
 S,A = Point(-2*COTE,0), Point(0,0)
 
 #print(main(S,A,grille,1))
-segmentInTheGrid(S,A, grille)
+segmentInTheGrid(Segment(S,A), grille)
 
 
 tu.hideturtle()
