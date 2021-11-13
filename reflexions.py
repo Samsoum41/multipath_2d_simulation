@@ -55,10 +55,10 @@ def dedans(A:Point,grille:Polygon):
     Procedure initializing the window and drawing the initial grid.
 """
 def tracer_grille(grille:Polygon,turtle):
-    x1,x2,y1,y2=grille.vertices
+    x1,y1,x2,y2=grille.bounds
     ADDITIONAL_SIZE = 300
     sizeOfScreen=abs(x1-x2) + ADDITIONAL_SIZE
-    turtle.setup(sizeOfScreen,sizeOfScreen)
+    tu.setup(sizeOfScreen,sizeOfScreen)
     turtle.up()
     turtle.speed(5)
     turtle.goto(x1,y1)
@@ -102,8 +102,8 @@ def main(nombre_de_reflexions=3):
     turtle = tu.Turtle()
     turtle.hideturtle()
     tracer_grille(grille, turtle)
-    drawPoint(S,'blue')
-    drawPoint(A,'red')
+    drawPoint(S,'blue',turtle)
+    drawPoint(A,'red',turtle)
     L=multipath(S,A,grille,nombre_de_reflexions, turtle)
     # On renvoie la liste des retards en secondes, en considérant que la distance est en pixel, donc 1 unité = 0.26 mm=2.6*10^-4 m
     lightSpeed=3*(10**8) # Célérité de la lumière en m/s
@@ -124,7 +124,7 @@ S,A = Point(-2*COTE,0), Point(0,0)
 #print(main(S,A,1))
 segmentInTheGrid(Segment(S,A), grille)
 """
-print(main(1))
+#print(main(1))
 
 
 #Pour n=10, 
