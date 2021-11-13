@@ -55,7 +55,7 @@ def dedans(A:Point,grille:Polygon):
     Procedure initializing the window and drawing the initial grid.
 """
 def tracer_grille(grille:Polygon,turtle):
-    x1,x2,y1,y2=grille.points
+    x1,x2,y1,y2=grille.vertices
     ADDITIONAL_SIZE = 300
     sizeOfScreen=abs(x1-x2) + ADDITIONAL_SIZE
     turtle.setup(sizeOfScreen,sizeOfScreen)
@@ -94,20 +94,21 @@ def drawPoint(S:Point,color:str,turtle):
     turtle.goto(S)
     turtle.dot(None,color)
     
-def main(S:Point,A:Point,grille:Polygon, nombre_de_reflexions=3):
+def main(nombre_de_reflexions=3):
     # Caractéristiques de la simulation :
     COTE = 300
+    S,A = Point(-2*COTE,0), Point(0,0)
     grille = Polygon(Point(-COTE, -COTE), Point(-COTE, COTE), Point(COTE, COTE), Point(COTE, -COTE))
     turtle = tu.Turtle()
     turtle.hideturtle()
-    turtle.exitonclick()
-    tracer_grille(grille)
+    tracer_grille(grille, turtle)
     drawPoint(S,'blue')
     drawPoint(A,'red')
     L=multipath(S,A,grille,nombre_de_reflexions, turtle)
     # On renvoie la liste des retards en secondes, en considérant que la distance est en pixel, donc 1 unité = 0.26 mm=2.6*10^-4 m
     lightSpeed=3*(10**8) # Célérité de la lumière en m/s
     n=len(L)
+    tu.exitonclick()
     return [L[k][1]*2.6*(10**-4)/lightSpeed for k in range(n)],n
 
 def creneaux(t,periode=0.5,amplitude=1,dephasage=0):
@@ -120,10 +121,10 @@ def creneaux(t,periode=0.5,amplitude=1,dephasage=0):
 
 """
 S,A = Point(-2*COTE,0), Point(0,0)
-#print(main(S,A,grille,1))
+#print(main(S,A,1))
 segmentInTheGrid(Segment(S,A), grille)
 """
-
+print(main(1))
 
 
 #Pour n=10, 
