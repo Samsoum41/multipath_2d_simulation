@@ -6,46 +6,50 @@ from sympy import Point, Line, Segment, Polygon
 """
 Returns the reflexion of a point about a LinearEntity
 """
-def reflection(lineEntity, pt:Point):
+def reflection_line(pt:Point, lineEntity):
     projectionOnLine = lineEntity.projection(pt)
     return pt + 2*(Point(projectionOnLine) - pt)
 
+def reflection_polygon(pt:Point, poly:Polygon):
+    return [reflection_line(pt, seg) for seg in poly.sides]
 
 
 def segmentInTheGrid(seg:Segment, grille:Polygon):
     I = grille.intersection(seg)
-    if I:
+    if dedans(seg.points[0], grille) and dedans(seg.points[1], grille):
+        return seg
+    elif I:
         if len(I)==1 :
             return Segment(I[0], seg.points[1]) if dedans(seg.points[1], grille) else Segment(seg.points[0], I[0])
         else : 
             return Segment(*I)
-    elif dedans(seg.points[0], grille):
-        return Seg
     else :
         return None
 
-def multipath(S:Point,A:Point,grille:Polygon,n,turtle,derniere_reflexion=None):
+def multipath(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
     res=[]
     SA = Segment(S,A)
     if n==0:
         segmentInterieur=segmentInTheGrid(SA,grille)
         if segmentInterieur:
             # A must be the second element of segmentInterieur
-            tracer(segmentInterieur, turtle, 'red')
+            tracer(segmentInterieur.points[0], segmentInterieur.points[1], turtle, 'red')
             return [segmentInterieur.points[0]]
         raise ValueError("You must have chosen S and A points inside the grid !")
     else:                                  
         # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
-        #virtualImages=reflexions_possibles(S,grille) 
+        virtualImages=reflection_polygon(S,grille)
+        if lastPoint in virtualImages: 
+            virtualImages.remove(lastPoint) 
         res = []
-        for image in virtualImages:      
-            points_arrive=multipath(image[0],A,grille,n-1,derniere_reflexion=image[1])
+        for P in virtualImages:      
+            points_arrive=multipath(P,A,grille,n-1, turtle, lastPoint=S)
             for I in points_arrive:
-                segmentInterieur=segmentInTheGrid(S,I,grille)  
+                segmentInterieur=segmentInTheGrid(Segment(S,I),grille)  
                 # On détermine l'intersection du nouveau point avec le point intermédiaire image
-                if segmentInterieur:
+                if not isinstance(segmentInterieur,Point):
                     # Si S est bien le premier point source, il se distingue en étant à l'intérieur, alors on trace le segment [SI2]
-                    departure, arrival = segmentInterieur
+                    departure, arrival = segmentInterieur.points
                     tracer(departure,arrival, turtle)
                     res+=[departure]
         return res                                                    
@@ -83,9 +87,7 @@ def tracer_grille(grille:Polygon,turtle):
     Draws a link between two points
 """
 def tracer(P:Point,I:Point,turtle,color_fleche='black'):
-    x1,y1=P
-    x2,y2=I
-    milieu=((x1+x2)/2,(y1+y2)/2)
+    milieu=((P.x+I.x)/2,(P.y+I.y)/2)
     turtle.up()
     turtle.goto(P)
     turtle.down()
@@ -107,7 +109,7 @@ def drawPoint(S:Point,color:str,turtle):
 def main(nombre_de_reflexions=3):
     # Caractéristiques de la simulation :
     COTE = 300
-    S,A = Point(-2*COTE,0), Point(0,0)
+    S,A = Point(-2*COTE/3,0), Point(COTE/3,COTE/3)
     grille = Polygon(Point(-COTE, -COTE), Point(-COTE, COTE), Point(COTE, COTE), Point(COTE, -COTE))
     turtle = tu.Turtle()
     turtle.hideturtle()
@@ -134,7 +136,7 @@ S,A = Point(-2*COTE,0), Point(0,0)
 #print(main(S,A,1))
 segmentInTheGrid(Segment(S,A), grille)
 """
-#print(main(1))
+#print(main(2))
 
 
 #Pour n=10, 
