@@ -3,30 +3,40 @@ from math import sqrt
 from random import random
 from sympy import Point, Line, Segment, Polygon
 
-def segmentInTheGrid(Seg:Segment, grille:Polygon):
-    I = grille.intersection(Seg)
+"""
+Returns the reflexion of a point about a LinearEntity
+"""
+def reflection(lineEntity, pt:Point):
+    projectionOnLine = lineEntity.projection(pt)
+    return pt + 2*(Point(projectionOnLine) - pt)
+
+
+
+def segmentInTheGrid(seg:Segment, grille:Polygon):
+    I = grille.intersection(seg)
     if I:
         if len(I)==1 :
-            return Segment(I[0], Seg.points[1]) if dedans(Seg.points[1], grille) else Segment(Seg.points[0], I[0])
+            return Segment(I[0], seg.points[1]) if dedans(seg.points[1], grille) else Segment(seg.points[0], I[0])
         else : 
             return Segment(*I)
-    elif dedans(Seg.points[0], grille):
+    elif dedans(seg.points[0], grille):
         return Seg
     else :
         return None
 
 def multipath(S:Point,A:Point,grille:Polygon,n,turtle,derniere_reflexion=None):
     res=[]
+    SA = Segment(S,A)
     if n==0:
-        segmentInterieur=segmentInTheGrid(S,A,grille)
+        segmentInterieur=segmentInTheGrid(SA,grille)
         if segmentInterieur:
             # A must be the second element of segmentInterieur
-            tracer(segmentInterieur[0], A, turtle, 'red')
-            return [segmentInterieur[0]]
-        return []
+            tracer(segmentInterieur, turtle, 'red')
+            return [segmentInterieur.points[0]]
+        raise ValueError("You must have chosen S and A points inside the grid !")
     else:                                  
         # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
-        virtualImages=reflexions_possibles(S,grille) 
+        #virtualImages=reflexions_possibles(S,grille) 
         res = []
         for image in virtualImages:      
             points_arrive=multipath(image[0],A,grille,n-1,derniere_reflexion=image[1])

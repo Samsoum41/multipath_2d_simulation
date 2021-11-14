@@ -1,6 +1,13 @@
 import unittest
-from reflexions import segmentInTheGrid, dedans
+from reflexions import segmentInTheGrid, dedans, reflection
 from sympy import Point, Segment, Polygon
+
+class TestReflexions(unittest.TestCase):
+    def test_classic(self):
+        self.assertEqual(reflection(Segment(Point(0,0), Point(1,0)), Point(0,1)), Point(0,-1))
+        self.assertEqual(reflection(Segment(Point(0,0), Point(1,0)), Point(0,2)), Point(0,-2))
+        self.assertEqual(reflection(Segment(Point(0,0), Point(0,1)), Point(1,0)), Point(-1,0))
+        self.assertEqual(reflection(Segment(Point(0,0), Point(1,1)), Point(-1,1)), Point(1,-1))
 
 class TestDedans(unittest.TestCase):
     def setUp(self):
