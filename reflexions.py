@@ -10,9 +10,9 @@ def reflection_line(pt:Point, lineEntity):
     projectionOnLine = lineEntity.projection(pt)
     return pt + 2*(Point(projectionOnLine) - pt)
 
+
 def reflection_polygon(pt:Point, poly:Polygon):
     return [reflection_line(pt, seg) for seg in poly.sides]
-
 
 def segmentInTheGrid(seg:Segment, grille:Polygon):
     I = grille.intersection(seg)
@@ -39,16 +39,13 @@ def multipath(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
     else:                                  
         # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
         virtualImages=reflection_polygon(S,grille)
-        if lastPoint in virtualImages: 
-            virtualImages.remove(lastPoint) 
+        virtualImages={side : reflection_line(S, side) for side in grille.sides if side!=lastPoint}
         res = []
-        for P in virtualImages:      
-            points_arrive=multipath(P,A,grille,n-1, turtle, lastPoint=S)
+        for key in virtualImages:      
+            points_arrive=multipath(virtualImages[key],A,grille,n-1, turtle, lastPoint=S)
             for I in points_arrive:
                 segmentInterieur=segmentInTheGrid(Segment(S,I),grille)  
-                # On détermine l'intersection du nouveau point avec le point intermédiaire image
-                if not isinstance(segmentInterieur,Point):
-                    # Si S est bien le premier point source, il se distingue en étant à l'intérieur, alors on trace le segment [SI2]
+                if (not isinstance(segmentInterieur,Point)) and (not key.contains(I)):
                     departure, arrival = segmentInterieur.points
                     tracer(departure,arrival, turtle)
                     res+=[departure]
