@@ -39,13 +39,13 @@ def multipath(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
     else:                                  
         # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
         virtualImages=reflection_polygon(S,grille)
-        virtualImages={side : reflection_line(S, side) for side in grille.sides if side!=lastPoint}
+        virtualImages={side : reflection_line(S, side) for side in grille.sides if reflection_line(S,side)!=lastPoint}
         res = []
         for key in virtualImages:      
             points_arrive=multipath(virtualImages[key],A,grille,n-1, turtle, lastPoint=S)
             for I in points_arrive:
                 segmentInterieur=segmentInTheGrid(Segment(S,I),grille)  
-                if (not isinstance(segmentInterieur,Point)) and (not key.contains(I)):
+                if (not isinstance(segmentInterieur,Point)) and (key.contains(I)):
                     departure, arrival = segmentInterieur.points
                     tracer(departure,arrival, turtle)
                     res+=[departure]
