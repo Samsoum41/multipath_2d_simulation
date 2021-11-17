@@ -34,7 +34,6 @@ def multipath(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
     if n==0:
         segmentInterieur=segmentInTheGrid(SA,grille)
         if segmentInterieur:
-            # A must be the second element of segmentInterieur
             tracer(segmentInterieur.points[0], segmentInterieur.points[1], turtle, 'red')
             return [segmentInterieur.points[0]]
         raise ValueError("You must have chosen S and A points inside the grid !")
@@ -46,7 +45,7 @@ def multipath(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
             points_arrive=multipath(virtualImages[key],A,grille,n-1, turtle, lastPoint=S)
             for I in points_arrive:
                 segmentInterieur=segmentInTheGrid(Segment(S,I),grille)  
-                if (not isinstance(segmentInterieur,Point)) and (key.contains(I)):
+                if (key.contains(I)):
                     departure, arrival = segmentInterieur.points
                     tracer(departure,arrival, turtle)
                     res+=[departure]
@@ -137,7 +136,7 @@ S,A = Point(-2*COTE,0), Point(0,0)
 #print(main(S,A,1))
 segmentInTheGrid(Segment(S,A), grille)
 """
-print(main(10))
+print(main(2))
 
 
 #Pour n=10, 
