@@ -83,6 +83,8 @@ class TestSegmentInTheGrid(unittest.TestCase):
         self.assertEqual(segmentInTheGrid(Segment(Point(-self.cote, 2*self.cote),Point(self.cote, 2*self.cote)), self.grille), None)
         self.assertEqual(segmentInTheGrid(Segment(Point(3*self.cote,0),Point(0,3*self.cote)), self.grille), None)
         self.assertEqual(segmentInTheGrid(Segment(Point(-self.cote,2*self.cote),Point(2*self.cote, -self.cote)), self.grille), Segment(Point(0,self.cote),(self.cote, 0)))
+        self.assertEqual(segmentInTheGrid(Segment(Point(2*self.cote, -self.cote),Point(-self.cote,2*self.cote)), self.grille), Segment(Point(self.cote, 0),(0, self.cote)))
+
 
 
 if __name__ == '__main__':
