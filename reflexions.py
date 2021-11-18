@@ -17,16 +17,14 @@ def reflection_polygon(pt:Point, poly:Polygon):
     return [reflection_line(pt, seg) for seg in poly.sides]
 
 def segmentInTheGrid(seg:Segment, grille:Polygon):
-    I = grille.intersection(seg)
-    if dedans(seg.points[0], grille) and dedans(seg.points[1], grille):
-        return seg
-    elif I:
-        if len(I)==1 :
-            return Segment(I[0], seg.points[1]) if dedans(seg.points[1], grille) else Segment(seg.points[0], I[0])
-        else : 
-            return Segment(I[0], I[1]) if I[0].distance(seg.points[0]) < I[1].distance(seg.points[0]) else Segment(I[1], I[0])
-    else :
-        return None
+    S, A = seg.points
+    insidePoints = grille.intersection(seg)
+    if S not in insidePoints and dedans(S, grille):
+        insidePoints.append(S)
+    if A not in insidePoints and dedans(A, grille):
+        insidePoints.append(A)
+    insidePoints.sort(key = lambda point : S.distance(point))
+    return Segment(*insidePoints[:2]) if insidePoints else None
 
 def multipath(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
     res=[]
@@ -128,6 +126,8 @@ def creneaux(t,periode=0.5,amplitude=1,dephasage=0):
 #S,A=Point((2*random()-1)*cote,(2*random()-1)*cote)  ,  PoinS,A=Point((2*random()-1)*cote,(2*random()-1)*cote)
 
 """
+
+
 S,A = Point(-2*COTE,0), Point(0,0)
 #print(main(S,A,1))
 segmentInTheGrid(Segment(S,A), grille)
