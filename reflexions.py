@@ -16,13 +16,20 @@ def reflection_line(pt:Point, lineEntity):
 def reflection_polygon(pt:Point, poly:Polygon):
     return [reflection_line(pt, seg) for seg in poly.sides]
 
+"""
+Add items to a list if they don't already exist in the list
+"""
+def addNewItems(items, array, keyCondition = None) -> list:
+    for item in items:
+        if item not in array and keyCondition(item):
+            array.append(item)
+    return array
+
+
 def segmentInTheGrid(seg:Segment, grille:Polygon):
     S, A = seg.points
     insidePoints = grille.intersection(seg)
-    if S not in insidePoints and dedans(S, grille):
-        insidePoints.append(S)
-    if A not in insidePoints and dedans(A, grille):
-        insidePoints.append(A)
+    insidePoints = addNewItems([S,A], insidePoints, keyCondition=lambda pt : dedans(pt,grille))
     insidePoints.sort(key = lambda point : S.distance(point))
     return Segment(*insidePoints[:2]) if insidePoints else None
 
