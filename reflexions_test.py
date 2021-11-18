@@ -79,11 +79,17 @@ class TestSegmentInTheGrid(unittest.TestCase):
 
     # This test contains the arrival point and the starting point out the grid
     def test_bothOut(self):
+        # No intersections
         self.assertEqual(segmentInTheGrid(Segment(Point(3*self.cote,0),Point(2*self.cote,0)), self.grille), None)
         self.assertEqual(segmentInTheGrid(Segment(Point(-self.cote, 2*self.cote),Point(self.cote, 2*self.cote)), self.grille), None)
         self.assertEqual(segmentInTheGrid(Segment(Point(3*self.cote,0),Point(0,3*self.cote)), self.grille), None)
+        # Two intersections
         self.assertEqual(segmentInTheGrid(Segment(Point(-self.cote,2*self.cote),Point(2*self.cote, -self.cote)), self.grille), Segment(Point(0,self.cote),(self.cote, 0)))
         self.assertEqual(segmentInTheGrid(Segment(Point(2*self.cote, -self.cote),Point(-self.cote,2*self.cote)), self.grille), Segment(Point(self.cote, 0),(0, self.cote)))
+        self.assertEqual(segmentInTheGrid(Segment(Point(0, -self.cote),Point(0,2*self.cote)), self.grille), Segment(Point(0, -self.cote),(0, self.cote)))
+        self.assertEqual(segmentInTheGrid(Segment(Point(-self.cote, 0),Point(2*self.cote, 0)), self.grille), Segment(Point(-self.cote, 0),(self.cote, 0)))
+        self.assertEqual(segmentInTheGrid(Segment(Point(2*self.cote, 0),Point(-self.cote,0)), self.grille), Segment(Point(self.cote, 0),(-self.cote, 0)))
+        self.assertEqual(segmentInTheGrid(Segment(Point(2*self.cote, 0),Point(-self.cote,0)), self.grille), Segment(Point(self.cote, 0),(-self.cote, 0)))
 
 
 

@@ -49,7 +49,7 @@ def multipath(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
                     departure, arrival = segmentInterieur.points
                     tracer(departure,arrival, turtle)
                     res+=[departure]
-        return res                                             
+        return res                                                    
                 
 """
     Check if a point A is in a grid. Grid is described as [-x,x,y,-y]
@@ -115,13 +115,9 @@ def main(nombre_de_reflexions=3):
     drawPoint(S,'blue',turtle)
     drawPoint(A,'red',turtle)
     res = multipath(S,A,grille,nombre_de_reflexions, turtle)
+    # On renvoie la liste des retards en secondes, en considérant que la distance est en pixel, donc 1 unité = 0.26 mm=2.6*10^-4 m
     tu.exitonclick()
     return res
-    # On renvoie la liste des retards en secondes, en considérant que la distance est en pixel, donc 1 unité = 0.26 mm=2.6*10^-4 m
-    lightSpeed=3*(10**8) # Célérité de la lumière en m/s
-    n=len(L)
-    tu.exitonclick()
-    return [L[k][1]*2.6*(10**-4)/lightSpeed for k in range(n)],n
 
 def creneaux(t,periode=0.5,amplitude=1,dephasage=0):
     if ((t+dephasage)//periode)%2==1: return amplitude
@@ -136,7 +132,7 @@ S,A = Point(-2*COTE,0), Point(0,0)
 #print(main(S,A,1))
 segmentInTheGrid(Segment(S,A), grille)
 """
-print(main(2))
+#print(main(2))
 
 
 #Pour n=10, 
