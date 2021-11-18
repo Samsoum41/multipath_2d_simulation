@@ -26,31 +26,31 @@ def addNewItems(items, array, keyCondition = None) -> list:
     return array
 
 
-def segmentInTheGrid(seg:Segment, grille:Polygon):
+def segmentInTheGrid(seg:Segment, grille:Polygon) -> Segment:
     S, A = seg.points
-    insidePoints = grille.intersection(seg)
-    insidePoints = addNewItems([S,A], insidePoints, keyCondition=lambda pt : dedans(pt,grille))
+    insidePoints = addNewItems([S,A], grille.intersection(seg), keyCondition=lambda pt : dedans(pt,grille))
     insidePoints.sort(key = lambda point : S.distance(point))
     return Segment(*insidePoints[:2]) if insidePoints else None
 
-def multipath(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
+def simulate_reflexions(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
     res=[]
     SA = Segment(S,A)
     if n==0:
         segmentInterieur=segmentInTheGrid(SA,grille)
         if segmentInterieur:
-            tracer(segmentInterieur.points[0], segmentInterieur.points[1], turtle, 'red')
-            return [segmentInterieur.points[0]]
+            departure, arrival = segmentInterieur
+            tracer(departure, arrival, turtle, 'red')
+            return [departure]
         raise ValueError("You must have chosen S and A points inside the grid !")
     else:                                  
         # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
         virtualImages={side : reflection_line(S, side) for side in grille.sides if reflection_line(S,side)!=lastPoint}
         res = []
-        for key in virtualImages:      
-            points_arrive=multipath(virtualImages[key],A,grille,n-1, turtle, lastPoint=S)
+        for side in virtualImages:      
+            points_arrive=simulate_reflexions(virtualImages[side],A,grille,n-1, turtle, lastPoint=S)
             for I in points_arrive:
                 segmentInterieur=segmentInTheGrid(Segment(S,I),grille)  
-                if (key.contains(I)):
+                if side.contains(I):
                     departure, arrival = segmentInterieur.points
                     tracer(departure,arrival, turtle)
                     res+=[departure]
@@ -119,7 +119,7 @@ def main(nombre_de_reflexions=3):
     tracer_grille(grille, turtle)
     drawPoint(S,'blue',turtle)
     drawPoint(A,'red',turtle)
-    res = multipath(S,A,grille,nombre_de_reflexions, turtle)
+    res = simulate_reflexions(S,A,grille,nombre_de_reflexions, turtle)
     # On renvoie la liste des retards en secondes, en considérant que la distance est en pixel, donc 1 unité = 0.26 mm=2.6*10^-4 m
     tu.exitonclick()
     return res
@@ -145,16 +145,3 @@ segmentInTheGrid(Segment(S,A), grille)
 #Pour n=10, 
 
 #([6307.138812488593, 5522.68050859363, 5544.366510251645, 5178.802950489622, 5316.013544000805, 4623.851208678757, 4743.416490252568, 5707.889277132134, 5323.532661682466, 5346.026561849464, 4589.117562233507, 4743.41649025257, 4438.46820423443, 4518.849411078003, 3911.5214431215895, 4244.997055358225, 3911.521443121589, 4263.8011210655695, 4101.219330881975, 4429.44691807002, 4438.468204234429, 4701.063709417263, 4429.446918070021, 4384.062043356595, 4263.801121065569, 4623.851208678757, 4589.117562233507, 4701.0637094172625, 5522.680508593631, 4743.416490252569, 5544.366510251644, 5707.889277132134, 4244.997055358224, 4743.41649025257, 5178.802950489621, 4518.849411078001, 5323.532661682466, 5316.013544000806, 5346.026561849464, 6307.138812488593], 40)
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
