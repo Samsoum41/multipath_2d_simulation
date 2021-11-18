@@ -3,6 +3,8 @@ from math import sqrt
 from random import random
 from sympy import Point, Line, Segment, Polygon
 
+TURTLE_SPEED = 12
+
 """
 Returns the reflexion of a point about a LinearEntity
 """
@@ -22,7 +24,7 @@ def segmentInTheGrid(seg:Segment, grille:Polygon):
         if len(I)==1 :
             return Segment(I[0], seg.points[1]) if dedans(seg.points[1], grille) else Segment(seg.points[0], I[0])
         else : 
-            return Segment(*I)
+            return Segment(I[0], I[1]) if I[0].distance(seg.points[0]) < I[1].distance(seg.points[0]) else Segment(I[1], I[0])
     else :
         return None
 
@@ -32,24 +34,22 @@ def multipath(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
     if n==0:
         segmentInterieur=segmentInTheGrid(SA,grille)
         if segmentInterieur:
-            # A must be the second element of segmentInterieur
             tracer(segmentInterieur.points[0], segmentInterieur.points[1], turtle, 'red')
             return [segmentInterieur.points[0]]
         raise ValueError("You must have chosen S and A points inside the grid !")
     else:                                  
         # virtualImages contient une liste de couple ( objet virtuel, direction du miroir par rapport auquel les objets sont symétriques)
-        virtualImages=reflection_polygon(S,grille)
         virtualImages={side : reflection_line(S, side) for side in grille.sides if reflection_line(S,side)!=lastPoint}
         res = []
         for key in virtualImages:      
             points_arrive=multipath(virtualImages[key],A,grille,n-1, turtle, lastPoint=S)
             for I in points_arrive:
                 segmentInterieur=segmentInTheGrid(Segment(S,I),grille)  
-                if (not isinstance(segmentInterieur,Point)) and (key.contains(I)):
+                if (key.contains(I)):
                     departure, arrival = segmentInterieur.points
                     tracer(departure,arrival, turtle)
                     res+=[departure]
-        return res                                                    
+        return res                                             
                 
 """
     Check if a point A is in a grid. Grid is described as [-x,x,y,-y]
@@ -78,7 +78,7 @@ def tracer_grille(grille:Polygon,turtle):
     turtle.goto(x2,y2)
     turtle.goto(x2,y1)
     turtle.goto(x1,y1)
-    turtle.speed(7)
+    turtle.speed(TURTLE_SPEED)
 
 """
     Draws a link between two points
@@ -106,14 +106,17 @@ def drawPoint(S:Point,color:str,turtle):
 def main(nombre_de_reflexions=3):
     # Caractéristiques de la simulation :
     COTE = 300
-    S,A = Point(-2*COTE/3,0), Point(COTE/3,COTE/3)
+    randNumber = random()*COTE
+    S,A = Point(randNumber,COTE/3), Point(-randNumber,COTE/3)
     grille = Polygon(Point(-COTE, -COTE), Point(-COTE, COTE), Point(COTE, COTE), Point(COTE, -COTE))
     turtle = tu.Turtle()
     turtle.hideturtle()
     tracer_grille(grille, turtle)
     drawPoint(S,'blue',turtle)
     drawPoint(A,'red',turtle)
-    L=multipath(S,A,grille,nombre_de_reflexions, turtle)
+    res = multipath(S,A,grille,nombre_de_reflexions, turtle)
+    tu.exitonclick()
+    return res
     # On renvoie la liste des retards en secondes, en considérant que la distance est en pixel, donc 1 unité = 0.26 mm=2.6*10^-4 m
     lightSpeed=3*(10**8) # Célérité de la lumière en m/s
     n=len(L)
@@ -133,7 +136,7 @@ S,A = Point(-2*COTE,0), Point(0,0)
 #print(main(S,A,1))
 segmentInTheGrid(Segment(S,A), grille)
 """
-#print(main(2))
+print(main(2))
 
 
 #Pour n=10, 
