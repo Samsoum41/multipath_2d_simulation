@@ -2,24 +2,22 @@ import turtle as tu
 from math import sqrt
 from random import random
 from sympy import Point, Line, Segment, Polygon
+from sympy.core.numbers import Integer
+from sympy.logic.boolalg import Boolean
 
 TURTLE_SPEED = 12
 
 """
 Returns the reflexion of a point about a LinearEntity
 """
-def reflection_line(pt:Point, lineEntity):
+def reflection_line(pt:Point, lineEntity:Segment) -> Point:
     projectionOnLine = lineEntity.projection(pt)
     return pt + 2*(Point(projectionOnLine) - pt)
-
-
-def reflection_polygon(pt:Point, poly:Polygon):
-    return [reflection_line(pt, seg) for seg in poly.sides]
 
 """
 Add items to a list if they don't already exist in the list
 """
-def addNewItems(items, array, keyCondition = None) -> list:
+def addNewItems(items:list, array:list, keyCondition= None) -> list:
     for item in items:
         if item not in array and keyCondition(item):
             array.append(item)
@@ -32,13 +30,13 @@ def segmentInTheGrid(seg:Segment, grille:Polygon) -> Segment:
     insidePoints.sort(key = lambda point : S.distance(point))
     return Segment(*insidePoints[:2]) if insidePoints else None
 
-def simulate_reflexions(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = None):
+def simulate_reflexions(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint:Point = None) -> list[Point]:
     res=[]
     SA = Segment(S,A)
     if n==0:
         segmentInterieur=segmentInTheGrid(SA,grille)
         if segmentInterieur:
-            departure, arrival = segmentInterieur
+            departure, arrival = segmentInterieur.points
             tracer(departure, arrival, turtle, 'red')
             return [departure]
         raise ValueError("You must have chosen S and A points inside the grid !")
@@ -59,7 +57,7 @@ def simulate_reflexions(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint = Non
 """
     Check if a point A is in a grid. Grid is described as [-x,x,y,-y]
 """
-def dedans(A:Point,grille:Polygon):
+def dedans(A:Point,grille:Polygon) -> bool:
     xa,ya=A
     grille = grille.bounds
     # Ici on suppose que la grille est de la forme (-abscisse,abscisse,ordonnée,-ordonnée) elle est rectangulaire
@@ -70,13 +68,13 @@ def dedans(A:Point,grille:Polygon):
 """ 
     Procedure initializing the window and drawing the initial grid.
 """
-def tracer_grille(grille:Polygon,turtle):
+def tracer_grille(grille:Polygon,turtle: tu.Turtle) -> None:
     x1,y1,x2,y2=grille.bounds
     ADDITIONAL_SIZE = 300
     sizeOfScreen=abs(x1-x2) + ADDITIONAL_SIZE
     tu.setup(sizeOfScreen,sizeOfScreen)
     turtle.up()
-    turtle.speed(5)
+    turtle.speed(TURTLE_SPEED)
     turtle.goto(x1,y1)
     turtle.down()
     turtle.goto(x1,y2)
@@ -88,7 +86,7 @@ def tracer_grille(grille:Polygon,turtle):
 """
     Draws a link between two points
 """
-def tracer(P:Point,I:Point,turtle,color_fleche='black'):
+def tracer(P:Point,I:Point,turtle,color_fleche : str ='black') -> None:
     milieu=((P.x+I.x)/2,(P.y+I.y)/2)
     turtle.up()
     turtle.goto(P)
@@ -103,12 +101,12 @@ def tracer(P:Point,I:Point,turtle,color_fleche='black'):
 """
     Draw a point of a specific color on a position.
 """
-def drawPoint(S:Point,color:str,turtle):
+def drawPoint(S:Point,color:str,turtle) -> None:
     turtle.up()
     turtle.goto(S)
     turtle.dot(None,color)
     
-def main(nombre_de_reflexions=3):
+def main(nombre_de_reflexions:int=3) -> None:
     # Caractéristiques de la simulation :
     COTE = 300
     randNumber = random()*COTE
@@ -122,24 +120,13 @@ def main(nombre_de_reflexions=3):
     res = simulate_reflexions(S,A,grille,nombre_de_reflexions, turtle)
     # On renvoie la liste des retards en secondes, en considérant que la distance est en pixel, donc 1 unité = 0.26 mm=2.6*10^-4 m
     tu.exitonclick()
-    return res
-
-def creneaux(t,periode=0.5,amplitude=1,dephasage=0):
-    if ((t+dephasage)//periode)%2==1: return amplitude
-    else : return 0
-
-    
-
-#S,A=Point((2*random()-1)*cote,(2*random()-1)*cote)  ,  PoinS,A=Point((2*random()-1)*cote,(2*random()-1)*cote)
 
 """
-
-
 S,A = Point(-2*COTE,0), Point(0,0)
 #print(main(S,A,1))
 segmentInTheGrid(Segment(S,A), grille)
 """
-#print(main(2))
+print(main(2))
 
 
 #Pour n=10, 
