@@ -67,6 +67,10 @@ class TestSegmentInTheGrid(unittest.TestCase):
         self.assertEqual(segmentInTheGrid(Segment(Point(0,0),Point(0,2*self.cote)), self.grille), Segment(Point(0,0),Point(0,self.cote)))
         # S is at the bottom
         self.assertEqual(segmentInTheGrid(Segment(Point(0,0),Point(0,-2*self.cote)), self.grille), Segment(Point(0,0),Point(0,-self.cote)))
+        # Test with one point out and the other one on the border. Should return Point
+        self.assertEqual(segmentInTheGrid(Segment(Point(0,-self.cote),Point(0,-2*self.cote)), self.grille), Point(0,-self.cote))
+        self.assertEqual(segmentInTheGrid(Segment(Point(self.cote, 0),Point(2*self.cote, 0)), self.grille), Point(self.cote, 0))
+
 
     # This test contains the arrival point and the starting point in the grid
     def test_bothIn(self):

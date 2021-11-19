@@ -28,7 +28,7 @@ def segmentInTheGrid(seg:Segment, grille:Polygon) -> Segment:
     S, A = seg.points
     insidePoints = addNewItems([S,A], grille.intersection(seg), keyCondition=lambda pt : dedans(pt,grille))
     insidePoints.sort(key = lambda point : S.distance(point))
-    return Segment(*insidePoints[:2]) if insidePoints else None
+    return Segment(insidePoints[0], insidePoints[1]) if insidePoints and len(insidePoints)>1 else Point(*insidePoints) if insidePoints else None
 
 def simulate_reflexions(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint:Point = None) -> list[Point]:
     res=[]
@@ -126,7 +126,7 @@ S,A = Point(-2*COTE,0), Point(0,0)
 #print(main(S,A,1))
 segmentInTheGrid(Segment(S,A), grille)
 """
-print(main(2))
+#pprint(main(2))
 
 
 #Pour n=10, 
