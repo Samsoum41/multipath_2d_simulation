@@ -6,7 +6,6 @@ from sympy.core.numbers import Integer
 from sympy.logic.boolalg import Boolean
 
 TURTLE_SPEED = 12
-
 """
 Returns the reflexion of a point about a LinearEntity
 """
@@ -15,7 +14,7 @@ def reflection_line(pt:Point, lineEntity:Segment) -> Point:
     return pt + 2*(Point(projectionOnLine) - pt)
 
 """
-Add items to a list if they don't already exist in the list
+Adds items to a list if they don't already exist in the list and returns it
 """
 def addNewItems(items:list, array:list, keyCondition= None) -> list:
     for item in items:
@@ -23,14 +22,17 @@ def addNewItems(items:list, array:list, keyCondition= None) -> list:
             array.append(item)
     return array
 
-
+"""
+Draw the intersection segment of the initial segment with the grid
+"""
 def segmentInTheGrid(seg:Segment, grille:Polygon) -> Segment:
     S, A = seg.points
     insidePoints = addNewItems([S,A], grille.intersection(seg), keyCondition=lambda pt : dedans(pt,grille))
     insidePoints.sort(key = lambda point : S.distance(point))
     return Segment(insidePoints[0], insidePoints[1]) if insidePoints and len(insidePoints)>1 else Point(*insidePoints) if insidePoints else None
 
-def simulate_reflexions(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint:Point = None) -> list[Point]:
+
+def simulate_reflexions(S:Point,A:Point,grille:Polygon,n,turtle, lastPoint:Point = None) -> list:
     res=[]
     SA = Segment(S,A)
     if n==0:
@@ -106,6 +108,9 @@ def drawPoint(S:Point,color:str,turtle) -> None:
     turtle.goto(S)
     turtle.dot(None,color)
     
+"""
+Main function where the program should start.
+"""
 def main(nombre_de_reflexions:int=3) -> None:
     # Caractéristiques de la simulation :
     COTE = 300
@@ -121,14 +126,9 @@ def main(nombre_de_reflexions:int=3) -> None:
     # On renvoie la liste des retards en secondes, en considérant que la distance est en pixel, donc 1 unité = 0.26 mm=2.6*10^-4 m
     tu.exitonclick()
 
+
 """
-S,A = Point(-2*COTE,0), Point(0,0)
-#print(main(S,A,1))
-segmentInTheGrid(Segment(S,A), grille)
+In order to launch the program directly by running the script, we can use the command below. However, as it lauches turtle displaying, it can't run on a virtual machine without display unit, like CI's ones. 
+So it will break the tests when pushing.
 """
-#pprint(main(2))
-
-
-#Pour n=10, 
-
-#([6307.138812488593, 5522.68050859363, 5544.366510251645, 5178.802950489622, 5316.013544000805, 4623.851208678757, 4743.416490252568, 5707.889277132134, 5323.532661682466, 5346.026561849464, 4589.117562233507, 4743.41649025257, 4438.46820423443, 4518.849411078003, 3911.5214431215895, 4244.997055358225, 3911.521443121589, 4263.8011210655695, 4101.219330881975, 4429.44691807002, 4438.468204234429, 4701.063709417263, 4429.446918070021, 4384.062043356595, 4263.801121065569, 4623.851208678757, 4589.117562233507, 4701.0637094172625, 5522.680508593631, 4743.416490252569, 5544.366510251644, 5707.889277132134, 4244.997055358224, 4743.41649025257, 5178.802950489621, 4518.849411078001, 5323.532661682466, 5316.013544000806, 5346.026561849464, 6307.138812488593], 40)
+#main(2)
