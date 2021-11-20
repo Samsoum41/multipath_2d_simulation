@@ -6,6 +6,7 @@ from sympy.core.numbers import Integer
 from sympy.logic.boolalg import Boolean
 
 TURTLE_SPEED = 12
+NUMBER_OF_REFLEXIONS = 2
 """
 Returns the reflexion of a point about a LinearEntity
 """
@@ -131,4 +132,4 @@ def main(nombre_de_reflexions:int=3) -> None:
 In order to launch the program directly by running the script, we can use the command below. However, as it lauches turtle displaying, it can't run on a virtual machine without display unit, like CI's ones. 
 So it will break the tests when pushing.
 """
-#main(2)
+#main(NUMBER_OF_REFLEXIONS)
